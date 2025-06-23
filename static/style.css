@@ -47,48 +47,42 @@ body {
     display: flex;
     gap: var(--spacing-medium);
     width: 100%;
-    max-width: 1200px; /* Max width for the entire layout */
-    align-items: flex-start; /* Align items to the top for the main layout */
-    /* Adjust min-height to push fixed form to bottom of viewport */
-    min-height: calc(100vh - (2 * var(--spacing-xxl))); /* Subtract body padding */
-    padding-top: var(--spacing-xxl); /* Add top padding from body as body removed it */
-    padding-bottom: calc(var(--ai-form-height) + var(--spacing-xxl)); /* Space for fixed form + some buffer */
+    max-width: 1200px; 
+    align-items: flex-start; 
+    
+    min-height: calc(100vh - (2 * var(--spacing-xxl))); 
+    padding-top: var(--spacing-xxl);
+    padding-bottom: calc(var(--ai-form-height) + var(--spacing-xxl)); 
 }
 
-/* Specific body adjustments for when .ai-main-layout is active */
 body .ai-main-layout {
-    /* Override generic body centering for the main app layout */
     align-items: flex-start;
     padding-top: var(--spacing-xxl);
     padding-bottom: calc(var(--ai-form-height) + var(--spacing-xxl));
 }
 
-/*
- * Main Content Box Styling (the 'box' now takes main content, generic version is below)
- */
+
 .box {
     background: var(--background-white-translucent);
     padding: var(--spacing-xxl);
     border-radius: var(--border-radius-large);
     width: 100%;
-    max-width: 640px; /* Default max-width for non-AI layout pages */
+    max-width: 640px; 
     box-shadow: 0 8px 24px var(--shadow-light);
     animation: fadeIn 1s ease-in-out, subtlePulse 3s ease-in-out infinite alternate;
-    margin: auto; /* Ensures centering for non-AI layout pages */
+    margin: auto; 
     display: flex;
     flex-direction: column;
     gap: var(--spacing-medium);
 }
 
-/* Specific .box adjustments for when .ai-main-layout is active */
 .ai-main-layout .box {
-    flex: 1; /* Allows box to grow and shrink horizontally within .ai-main-layout */
-    max-width: none; /* Remove max-width when part of the main layout */
-    margin: 0; /* Remove auto margin when part of the main layout */
+    flex: 1; 
+    max-width: none; 
+    margin: 0;
 }
 
 
-/* Keyframe animation for the fade-in effect (initial appearance) */
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -100,23 +94,19 @@ body .ai-main-layout {
     }
 }
 
-/* Keyframe animation for a subtle, continuous box-shadow pulse */
 @keyframes subtlePulse {
     0% {
         box-shadow: 0 8px 24px var(--shadow-light);
     }
     50% {
-        box-shadow: 0 12px 30px var(--shadow-strong); /* Slightly larger, stronger shadow */
+        box-shadow: 0 12px 30px var(--shadow-strong); 
     }
     100% {
         box-shadow: 0 8px 24px var(--shadow-light);
     }
 }
 
-/*
- * Heading Styles
- * Specific styling for the main title of the application.
- */
+
 .heading {
     text-align: center;
     font-size: 24px;
@@ -124,10 +114,7 @@ body .ai-main-layout {
     color: var(--primary-color);
 }
 
-/*
- * Typed Text Display Area
- * Styles for the dynamic "typed" phrases.
- */
+
 .typed-text {
     font-size: 18px;
     text-align: center;
@@ -136,9 +123,7 @@ body .ai-main-layout {
     min-height: 24px;
 }
 
-/*
- * Form Group Styling (for login/signup inputs)
- */
+
 .form-group {
     margin-bottom: 15px;
 }
@@ -150,13 +135,13 @@ body .ai-main-layout {
 }
 .form-group input[type="text"],
 .form-group input[type="password"] {
-    width: calc(100% - 24px); /* Account for padding */
+    width: calc(100% - 24px);
     padding: 12px;
     border: 1px solid #ddd;
     border-radius: 8px;
     font-size: 16px;
-    box-sizing: border-box; /* Include padding in width */
-    transition: border-color 0.3s ease, box-shadow 0.3s ease; /* Smooth transitions for focus */
+    box-sizing: border-box; 
+    transition: border-color 0.3s ease, box-shadow 0.3s ease; 
 }
 .form-group input[type="text"]:focus,
 .form-group input[type="password"]:focus {
@@ -165,9 +150,7 @@ body .ai-main-layout {
     box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
 }
 
-/*
- * Account Link Styling (for "Already have an account?" / "Don't have an account?")
- */
+
 .account-link {
     text-align: center;
     margin-top: 20px;
@@ -183,9 +166,7 @@ body .ai-main-layout {
     text-decoration: underline;
 }
 
-/*
- * Flash Message Styling
- */
+
 .flashes {
     list-style: none;
     padding: 10px;
@@ -234,21 +215,20 @@ body .ai-main-layout {
   color: #555;
 }
 
-/* --- Main Content Layout (Form and Answer Sections) for AI App --- */
+
 .ai-main-layout .main-content-wrapper {
     display: flex;
-    flex-direction: column-reverse; /* Puts the input form below the answer section */
-    gap: var(--spacing-xl); /* Space between answer and input */
+    flex-direction: column-reverse; 
+    gap: var(--spacing-xl); 
     width: 100%;
-    /* Add padding to the bottom to make space for the fixed form */
-    padding-bottom: var(--ai-form-height); /* Space for the fixed form */
+
+    padding-bottom: var(--ai-form-height); 
 }
 
-/* --- Fixed Input Form Styling --- */
-.ai-main-layout .input-form-section { /* This is the form itself, given class from index.html */
+.ai-main-layout .input-form-section { 
     position: fixed;
     bottom: 0;
-    left: var(--ai-sidebar-width); /* Adjusted to start after the sidebar */
+    left: var(--ai-sidebar-width); 
     right: 0;
     background: var(--background-white);
     padding: var(--spacing-medium) var(--spacing-xxl);
@@ -257,27 +237,26 @@ body .ai-main-layout {
     display: flex;
     flex-direction: column;
     box-sizing: border-box;
-    height: var(--ai-form-height); /* Set a fixed height for the form */
+    height: var(--ai-form-height); 
     justify-content: center;
     align-items: center;
 }
 
-/* Adjust textarea within fixed form */
-.ai-main-layout .input-form-section textarea {
+
+   .ai-main-layout .input-form-section textarea {
     min-height: 80px;
     max-height: 120px;
     margin-bottom: var(--spacing-small);
-    width: calc(100% - (2 * var(--spacing-xxl))); /* Adjust width to fit padding */
-}
+    width: calc(100% - (2 * var(--spacing-xxl))); 
 
-/* Adjust button within fixed form */
-.ai-main-layout .input-form-section button {
+
+    .ai-main-layout .input-form-section button {
     margin-top: 0;
-    width: calc(100% - (2 * var(--spacing-xxl))); /* Adjust width to fit padding */
+    width: calc(100% - (2 * var(--spacing-xxl))); 
 }
 
-/* Ensure the file upload container respects fixed form layout */
-.ai-main-layout .input-form-section .file-upload-container {
+
+    .ai-main-layout .input-form-section .file-upload-container {
     bottom: var(--spacing-large);
     right: var(--spacing-xxl);
 }
@@ -287,9 +266,7 @@ body .ai-main-layout {
     min-width: 0;
 }
 
-/*
- * Textarea Input Field (for main AI assistant page) - these styles are now largely overridden by .input-form-section textarea
- */
+       
 .input-area-wrapper {
     position: relative;
     display: flex;
@@ -302,7 +279,7 @@ body .ai-main-layout {
     box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
 }
 
-textarea { /* General textarea styles, can be overridden by more specific ones */
+textarea { 
     width: 100%;
     min-height: 120px;
     padding: var(--spacing-small);
@@ -417,9 +394,7 @@ textarea:focus {
 }
 
 
-/*
- * Main Submit Button (general button style, can be overridden)
- */
+       
 button {
     margin-top: var(--spacing-medium);
     padding: 12px var(--spacing-xl);
@@ -445,14 +420,12 @@ button:active {
     box-shadow: 0 2px 4px var(--shadow-light);
 }
 
-/*
- * Result Container (general result styling)
- */
+       
 .result-container {
     display: flex;
     flex-direction: row;
     gap: var(--spacing-large);
-    margin-top: 0; /* No margin-top by default for main app layout */
+    margin-top: 0; 
     background: var(--background-result);
     border-left: 5px solid var(--secondary-color);
     padding: var(--spacing-medium);
@@ -460,15 +433,15 @@ button:active {
     flex-wrap: wrap;
     box-shadow: 0 2px 8px var(--shadow-light);
     overflow-y: auto;
-    /* Default max-height, will be overridden for main app layout */
+
     max-height: 400px;
 }
 
-/* Specific result container adjustments for when .ai-main-layout is active */
-.ai-main-layout .result-container {
-    max-height: calc(100vh - var(--ai-form-height) - (2 * var(--spacing-xxl)) - var(--spacing-xl) - 100px); /* Dynamic height for fixed form */
+
+       .ai-main-layout .result-container {
+    max-height: calc(100vh - var(--ai-form-height) - (2 * var(--spacing-xxl)) - var(--spacing-xl) - 100px); 
     min-height: 200px;
-    margin-bottom: var(--spacing-xl); /* Space between result and fixed form content */
+    margin-bottom: var(--spacing-xl);
 }
 
 
@@ -535,20 +508,19 @@ pre.code-block {
     box-shadow: none;
 }
 
-/* --- Responsive Adjustments --- */
-@media (max-width: 992px) { /* Adjust for larger tablets and smaller desktops */
+@media (max-width: 992px) { 
     .ai-main-layout {
-        flex-direction: column; /* Stack sidebar and main content vertically */
-        align-items: center; /* Center them horizontally */
+        flex-direction: column; 
+        align-items: center;
         gap: var(--spacing-xl);
         padding-top: var(--spacing-xl);
         padding-bottom: calc(var(--ai-form-height) + var(--spacing-xl));
     }
 
     .ai-main-layout .search-history-sidebar {
-        width: calc(100% - (2 * var(--spacing-medium))); /* Take full width minus padding */
+        width: calc(100% - (2 * var(--spacing-medium))); 
         max-height: 250px;
-        position: relative; /* Remove sticky when stacked */
+        position: relative; 
         top: auto;
     }
 
@@ -573,17 +545,17 @@ pre.code-block {
     }
 
     .ai-main-layout .toggle-history-btn {
-        display: block; /* Show toggle button on smaller screens */
+        display: block; 
     }
 
     .ai-main-layout .box {
         padding: var(--spacing-xl);
-        width: calc(100% - (2 * var(--spacing-medium))); /* Adjust width for stacked layout */
+        width: calc(100% - (2 * var(--spacing-medium))); 
     }
 
-    /* Fixed form adjustments for smaller screens */
+
     .ai-main-layout .input-form-section {
-        left: 0; /* Takes full width */
+        left: 0; 
         padding: var(--spacing-medium);
         height: auto;
         min-height: 150px;
@@ -604,7 +576,7 @@ pre.code-block {
         right: var(--spacing-medium);
     }
 
-    /* Adjust main content padding for fixed form on smaller screens */
+
     .ai-main-layout .main-content-wrapper {
         padding-bottom: calc(var(--ai-form-height) + var(--spacing-xl) + 50px);
     }
@@ -613,17 +585,16 @@ pre.code-block {
     }
 }
 
-@media (max-width: 768px) { /* Tablet and smaller screens */
-    /* .box padding and margin are already handled by 992px media query or default */
-    /* max-width for box is also handled */
+@media (max-width: 768px) { 
+    
 
     .ai-main-layout .main-content-wrapper {
-        flex-direction: column-reverse; /* Keep input below answer */
+        flex-direction: column-reverse; 
         gap: var(--spacing-xl);
     }
 
-    /* Result container already has max-height from 992px media query */
 
+    
     textarea, button {
         font-size: 14px;
         padding: 10px var(--spacing-small);
@@ -634,7 +605,7 @@ pre.code-block {
     }
 }
 
-@media (max-width: 480px) { /* Mobile specific adjustments */
+@media (max-width: 480px) {
     .box {
         padding: var(--spacing-small);
         margin: var(--spacing-small);
@@ -657,10 +628,7 @@ pre.code-block {
 }
 
 
-/* .container - This class does not appear in the current HTML files provided.
-   If it's meant for a different purpose or older structure, it can be kept or removed.
-   Keeping it for now to avoid unexpected changes.
-*/
+       
 .container {
     background: var(--background-white);
     padding: 25px;
@@ -669,7 +637,6 @@ pre.code-block {
     box-shadow: 0 4px 12px var(--shadow-light);
 }
 
-/* Theme switcher styles */
 .theme-switcher {
     position: fixed;
     top: 50%;
@@ -712,7 +679,7 @@ pre.code-block {
     border-color: var(--primary-color);
 }
 
-/* Dark theme specific styles */
+
 body[data-theme="dark"] {
     color: #e0e0e0;
     background-image: url('https://www.commlabindia.com/hubfs/blogs/ai-elearning-learner-engagement-info.jpg');
