@@ -1,30 +1,29 @@
 
 :root {
     --primary-color: #007bff;
-    --primary-hover-color: #0056b3; /* Darker blue on hover */
-    --secondary-color: #28a745; /* Green for success/highlights in results */
-    --background-light: #eef3f7; /* Light background shade */
-    --background-white-translucent: rgba(255, 255, 255, 0.85); /* Semi-transparent white for boxes */
-    --background-result: #f8f9fa; /* Light grey background for result container */
-    --border-color: #ccc; /* Light grey for borders */
-    --shadow-light: rgba(0, 0, 0, 0.1); /* Light shadow for depth */
-    --shadow-strong: rgba(0, 0, 0, 0.15); /* Slightly stronger shadow */
-    --border-radius-small: 8px; /* Standard small border radius */
-    --border-radius-medium: 10px; /* Standard medium border radius */
-    --border-radius-large: 15px; /* Standard large border radius */
+    --primary-hover-color: #0056b3; 
+    --secondary-color: #28a745; 
+    --background-light: #eef3f7; 
+    --background-white-translucent: rgba(255, 255, 255, 0.85); 
+    --background-result: #f8f9fa; 
+    --border-color: #ccc; 
+    --shadow-light: rgba(0, 0, 0, 0.1);
+    --shadow-strong: rgba(0, 0, 0, 0.15); 
+    --border-radius-small: 8px; 
+    --border-radius-medium: 10px;
+    --border-radius-large: 15px; 
     --spacing-small: 10px;
     --spacing-medium: 15px;
     --spacing-large: 20px;
     --spacing-xl: 24px;
     --spacing-xxl: 30px;
-    --background-white: #ffffff; /* Added for consistency with button colors */
-
-    /* Define layout specific variables for main app */
-    --ai-sidebar-width: 250px; /* Width for the AI assistant sidebar */
-    --ai-form-height: 220px; /* Approximate height of the fixed AI assistant form */
+    --background-white: #ffffff; 
+    
+    --ai-sidebar-width: 250px; 
+    --ai-form-height: 220px; 
 }
 
-/* --- Generic Body Styling (Applies to ALL pages by default) --- */
+
 body {
     font-family: 'Roboto', sans-serif;
     background-image: url('https://www.commlabindia.com/hubfs/blogs/ai-elearning-learner-engagement-info.jpg');
@@ -34,18 +33,16 @@ body {
     background-attachment: fixed;
     margin: 0;
     padding: 0;
-    display: flex; /* Use flexbox for centering content */
-    justify-content: center; /* Horizontally center content */
-    align-items: center; /* Vertically center content */
-    min-height: 100vh; /* Ensure body takes at least full viewport height */
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    min-height: 100vh; 
     color: #333;
     line-height: 1.6;
-    box-sizing: border-box; /* Include padding in height */
+    box-sizing: border-box; 
 }
 
 
-/* --- Styles specific to the AI Assistant main page (.ai-main-layout) --- */
-/* This ensures layout adjustments apply only when .ai-main-layout is present */
 .ai-main-layout {
     display: flex;
     gap: var(--spacing-medium);
