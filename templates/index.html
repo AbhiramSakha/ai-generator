@@ -101,7 +101,7 @@
   </div>
 
   <script>
-    // Typed text animation
+
     const typedText = document.getElementById('typedText');
     const phrases = [
       "Ask anything, get instant answers!",
@@ -135,7 +135,7 @@
     }
     document.addEventListener("DOMContentLoaded", type);
 
-    // Pagination logic for answer section only, and only if it's not a code response
+
     document.addEventListener("DOMContentLoaded", function () {
       const answerList = document.getElementById('answerList');
       if (!answerList) return;
@@ -181,7 +181,7 @@
       });
     });
 
-    // Theme switching logic
+    
     const themeButtons = document.querySelectorAll('.theme-switcher button');
     const body = document.body;
 
@@ -192,7 +192,7 @@
       } else if (theme === 'light') {
         body.removeAttribute('data-theme');
         localStorage.setItem('theme', 'light');
-      } else { // 'device'
+      } else { 
         const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
         if (prefersDark) {
           body.setAttribute('data-theme', 'dark');
@@ -214,7 +214,7 @@
       });
     }
 
-    // Load theme from localStorage on page load
+   
     document.addEventListener('DOMContentLoaded', () => {
       const savedTheme = localStorage.getItem('theme');
       if (savedTheme) {
@@ -224,7 +224,7 @@
       }
     });
 
-    // Add event listeners to theme buttons
+   
     themeButtons.forEach(button => {
       button.addEventListener('click', () => {
         const theme = button.dataset.theme;
@@ -232,14 +232,14 @@
       });
     });
 
-    // Listen for changes in device theme preference
+    
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
         if (!localStorage.getItem('theme')) {
             applyTheme('device');
         }
     });
 
-    // File upload specific JS
+    
     document.addEventListener('DOMContentLoaded', function() {
         const addFileBtn = document.getElementById('addFileBtn');
         const fileOptions = document.getElementById('fileOptions');
@@ -248,7 +248,7 @@
 
         if (addFileBtn && fileOptions) {
             addFileBtn.addEventListener('click', () => {
-                fileOptions.classList.toggle('show-options'); // Toggle visibility
+                fileOptions.classList.toggle('show-options'); 
             });
         }
 
@@ -257,7 +257,7 @@
                 if (fileInput.files.length > 0) {
                     const fileName = fileInput.files[0].name;
                     uploadedFileNameDisplay.textContent = `File selected: ${fileName}`;
-                    fileOptions.classList.remove('show-options'); // Hide options after selection
+                    fileOptions.classList.remove('show-options'); 
                 } else {
                     uploadedFileNameDisplay.textContent = '';
                 }
