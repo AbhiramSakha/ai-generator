@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI + Emoji Assistant</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="box">
+    <h2 class="heading">🤖 AI + Emoji Assistant</h2>
+    {# The typed-text remains visible always #}
+    <div class="typed-text" id="typedText"></div>
+
+    <div class="auth-links">
+      {% if current_user.is_authenticated %}
+        <span>Hello, {{ current_user.username }}!</span>
+        <a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+      {% else %}
+        <a href="{{ url_for('login') }}"><i class="fas fa-sign-in-alt"></i> Login</a>
+        <a href="{{ url_for('signup') }}"><i class="fas fa-user-plus"></i> Sign Up</a>
+      {% endif %}
+    </div>
+
+    {# Flash Messages #}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <ul class="flashes">
+        {% for category, message in messages %}
+          <li class="{{ category }}">{{ message }}</li>
+        {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
+    {# Conditionally display the form and answer box if the user is authenticated #}
+    {% if current_user.is_authenticated %}
+      <form method="POST" enctype="multipart/form-data">
+        <div class="input-area-wrapper"> {# New wrapper for input elements #}
+          <textarea name="text" placeholder="Ask your question..."></textarea>
+
+          <div class="file-upload-container">
+              <button type="button" class="add-file-btn" id="addFileBtn">
+                  <i class="fas fa-plus"></i> <span class="button-text">Attach File</span>
+              </button>
+              <div class="file-options" id="fileOptions">
+                  <label for="fileInput" class="file-option-btn">
+                      <i class="fas fa-upload"></i> Upload File
+                      <input type="file" id="fileInput" name="file" accept=".txt" hidden>
+                  </label>
+                  <button type="button" class="file-option-btn disabled" disabled>
+                      <i class="fas fa-cloud"></i> Google Drive (Coming Soon)
+                  </button>
+              </div>
+          </div>
+          <div id="uploadedFileName" class="uploaded-file-name"></div> {# Moved inside wrapper #}
+        </div>
+
+        <button type="submit"><i class="fas fa-paper-plane"></i> Get Answer</button>
+      </form>
+
+      {# Conditional rendering for answer based on content type #}
+      {% if rendered_content %}
+      <div class="result-container">
+        <div class="answer-box">
+          <h3>Answer</h3>
+          {% if is_code_response %}
+            {# Display code in a pre-formatted block #}
+            <pre class="code-block"><code>{{ rendered_content }}</code></pre>
+            {# No pagination for code #}
+          {% else %}
+            {# Display text (matter) with pagination #}
+            <ul id="answerList">
+              {% for i in range(rendered_content|length) %}
+                <li class="answer-item" style="display: {{ 'list-item' if i < 5 else 'none' }}">{{ rendered_content[i] }}</li>
+              {% endfor %}
+            </ul>
+            <div class="pagination-controls">
+              <button type="button" id="prevAnswerBtn" style="display: none;">Previous</button>
+              <button type="button" id="nextAnswerBtn">Next</button>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+      {% endif %}
+    {% else %}
+      {# Optional: Message to prompt login if not authenticated #}
+      <p style="text-align: center; margin-top: 30px; font-size: 1.1em; color: #666;">
+        Please log in or sign up to use the AI Assistant.
+      </p>
+    {% endif %}
+  </div>
+
+  {# Theme Switcher Container #}
+  <div class="theme-switcher">
+    <button id="themeLight" data-theme="light">Light</button>
+    <button id="themeDark" data-theme="dark">Dark</button>
+    <button id="themeDevice" data-theme="device">Device Default</button>
+  </div>
+
+  <script>
+    // Typed text animation
+    const typedText = document.getElementById('typedText');
+    const phrases = [
+      "Ask anything, get instant answers!",
+      "Powered by AI and emojis 🤖✨",
+      "Understand better, faster, smarter!",
+      "Just type and hit 'Get Answer' 🔍"
+    ];
+    let phraseIndex = 0;
+    let letterIndex = 0;
+    let currentPhrase = "";
+    let isDeleting = false;
+
+    function type() {
+      currentPhrase = phrases[phraseIndex];
+      if (isDeleting) {
+        typedText.textContent = currentPhrase.substring(0, letterIndex--);
+      } else {
+        typedText.textContent = currentPhrase.substring(0, letterIndex++);
+      }
+
+      if (!isDeleting && letterIndex === currentPhrase.length) {
+        isDeleting = true;
+        setTimeout(type, 1800);
+      } else if (isDeleting && letterIndex === 0) {
+        isDeleting = false;
+        phraseIndex = (phraseIndex + 1) % phrases.length;
+        setTimeout(type, 500);
+      } else {
+        setTimeout(type, isDeleting ? 50 : 90);
+      }
+    }
+    document.addEventListener("DOMContentLoaded", type);
+
+    // Pagination logic for answer section only, and only if it's not a code response
+    document.addEventListener("DOMContentLoaded", function () {
+      const answerList = document.getElementById('answerList');
+      if (!answerList) return;
+
+      const itemsPerPage = 5;
+      const answerItems = document.querySelectorAll('#answerList .answer-item');
+      const prevAnswerBtn = document.getElementById('prevAnswerBtn');
+      const nextAnswerBtn = document.getElementById('nextAnswerBtn');
+      let currentAnswerPage = 1;
+      const totalAnswerPages = Math.ceil(answerItems.length / itemsPerPage);
+
+      function showAnswerPage(page) {
+        const start = (page - 1) * itemsPerPage;
+        const end = start + itemsPerPage;
+
+        answerItems.forEach((item, index) => {
+          item.style.display = (index >= start && index < end) ? 'list-item' : 'none';
+        });
+
+        prevAnswerBtn.style.display = page > 1 ? 'inline-block' : 'none';
+        nextAnswerBtn.style.display = page < totalAnswerPages ? 'inline-block' : 'none';
+      }
+
+      if (answerItems.length > itemsPerPage) {
+        showAnswerPage(currentAnswerPage);
+      } else {
+        nextAnswerBtn.style.display = 'none';
+        prevAnswerBtn.style.display = 'none';
+      }
+
+      prevAnswerBtn.addEventListener('click', () => {
+        if (currentAnswerPage > 1) {
+          currentAnswerPage--;
+          showAnswerPage(currentAnswerPage);
+        }
+      });
+
+      nextAnswerBtn.addEventListener('click', () => {
+        if (currentAnswerPage < totalAnswerPages) {
+          currentAnswerPage++;
+          showAnswerPage(currentAnswerPage);
+        }
+      });
+    });
+
+    // Theme switching logic
+    const themeButtons = document.querySelectorAll('.theme-switcher button');
+    const body = document.body;
+
+    function applyTheme(theme) {
+      if (theme === 'dark') {
+        body.setAttribute('data-theme', 'dark');
+        localStorage.setItem('theme', 'dark');
+      } else if (theme === 'light') {
+        body.removeAttribute('data-theme');
+        localStorage.setItem('theme', 'light');
+      } else { // 'device'
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (prefersDark) {
+          body.setAttribute('data-theme', 'dark');
+        } else {
+          body.removeAttribute('data-theme');
+        }
+        localStorage.removeItem('theme');
+      }
+      updateActiveButton(theme);
+    }
+
+    function updateActiveButton(activeTheme) {
+      themeButtons.forEach(button => {
+        if (button.dataset.theme === activeTheme) {
+          button.classList.add('active');
+        } else {
+          button.classList.remove('active');
+        }
+      });
+    }
+
+    // Load theme from localStorage on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme) {
+        applyTheme(savedTheme);
+      } else {
+        applyTheme('device');
+      }
+    });
+
+    // Add event listeners to theme buttons
+    themeButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        const theme = button.dataset.theme;
+        applyTheme(theme);
+      });
+    });
+
+    // Listen for changes in device theme preference
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+        if (!localStorage.getItem('theme')) {
+            applyTheme('device');
+        }
+    });
+
+    // File upload specific JS
+    document.addEventListener('DOMContentLoaded', function() {
+        const addFileBtn = document.getElementById('addFileBtn');
+        const fileOptions = document.getElementById('fileOptions');
+        const fileInput = document.getElementById('fileInput');
+        const uploadedFileNameDisplay = document.getElementById('uploadedFileName');
+
+        if (addFileBtn && fileOptions) {
+            addFileBtn.addEventListener('click', () => {
+                fileOptions.classList.toggle('show-options'); // Toggle visibility
+            });
+        }
+
+        if (fileInput && uploadedFileNameDisplay) {
+            fileInput.addEventListener('change', () => {
+                if (fileInput.files.length > 0) {
+                    const fileName = fileInput.files[0].name;
+                    uploadedFileNameDisplay.textContent = `File selected: ${fileName}`;
+                    fileOptions.classList.remove('show-options'); // Hide options after selection
+                } else {
+                    uploadedFileNameDisplay.textContent = '';
+                }
+            });
+        }
+    });
+  </script>
+</body>
+</html>

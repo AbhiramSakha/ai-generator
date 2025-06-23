@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Up - AI Assistant</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="box">
+    <h2 class="heading">📝 Sign Up</h2>
+    <div class="typed-text" id="typedText">Join us to explore the AI Assistant!</div>
+
+    {# Flash Messages #}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <ul class="flashes">
+        {% for category, message in messages %}
+          <li class="{{ category }}">{{ message }}</li>
+        {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST">
+      <div class="form-group">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required placeholder="Choose a username">
+      </div>
+      <div class="form-group">
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required placeholder="Enter your password">
+      </div>
+      <div class="form-group">
+        <label for="confirm_password">Confirm Password:</label>
+        <input type="password" id="confirm_password" name="confirm_password" required placeholder="Confirm your password">
+      </div>
+      <button type="submit"><i class="fas fa-user-plus"></i> Register</button>
+    </form>
+    <p class="account-link">Already have an account? <a href="{{ url_for('login') }}">Log In</a></p>
+  </div>
+
+  <script>
+    // Basic JS for typed text animation (can be removed if not needed on signup page)
+    const typedText = document.getElementById('typedText');
+    const phrases = ["Join us to explore the AI Assistant!", "Create your account now!"];
+    let phraseIndex = 0;
+    let letterIndex = 0;
+    let currentPhrase = "";
+    let isDeleting = false;
+
+    function type() {
+      currentPhrase = phrases[phraseIndex];
+      if (isDeleting) {
+        typedText.textContent = currentPhrase.substring(0, letterIndex--);
+      } else {
+        typedText.textContent = currentPhrase.substring(0, letterIndex++);
+      }
+
+      if (!isDeleting && letterIndex === currentPhrase.length) {
+        isDeleting = true;
+        setTimeout(type, 1800);
+      } else if (isDeleting && letterIndex === 0) {
+        isDeleting = false;
+        phraseIndex = (phraseIndex + 1) % phrases.length;
+        setTimeout(type, 500);
+      } else {
+        setTimeout(type, isDeleting ? 50 : 90);
+      }
+    }
+    document.addEventListener("DOMContentLoaded", type);
+  </script>
+
+  <style>
+    /* Add basic styling for login/signup forms */
+    .form-group {
+      margin-bottom: 15px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: #555;
+    }
+    .form-group input[type="text"],
+    .form-group input[type="password"] {
+      width: calc(100% - 24px); /* Account for padding */
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 16px;
+      box-sizing: border-box; /* Include padding in width */
+    }
+    .form-group input[type="text"]:focus,
+    .form-group input[type="password"]:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+    }
+    .account-link {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 15px;
+      color: #666;
+    }
+    .account-link a {
+      color: var(--primary-color);
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .account-link a:hover {
+      text-decoration: underline;
+    }
+    .flashes {
+        list-style: none;
+        padding: 10px;
+        margin: 15px 0;
+        border-radius: 5px;
+    }
+    .flashes li {
+        margin-bottom: 5px;
+        padding: 8px;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+    .flashes .success {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+    .flashes .danger {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
+    .flashes .info {
+        background-color: #d1ecf1;
+        color: #0c5460;
+        border: 1px solid #bee5eb;
+    }
+  </style>
+</body>
+</html>

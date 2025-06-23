@@ -1,0 +1,864 @@
+
+:root {
+    --primary-color: #007bff;
+    --primary-hover-color: #0056b3; /* Darker blue on hover */
+    --secondary-color: #28a745; /* Green for success/highlights in results */
+    --background-light: #eef3f7; /* Light background shade */
+    --background-white-translucent: rgba(255, 255, 255, 0.85); /* Semi-transparent white for boxes */
+    --background-result: #f8f9fa; /* Light grey background for result container */
+    --border-color: #ccc; /* Light grey for borders */
+    --shadow-light: rgba(0, 0, 0, 0.1); /* Light shadow for depth */
+    --shadow-strong: rgba(0, 0, 0, 0.15); /* Slightly stronger shadow */
+    --border-radius-small: 8px; /* Standard small border radius */
+    --border-radius-medium: 10px; /* Standard medium border radius */
+    --border-radius-large: 15px; /* Standard large border radius */
+    --spacing-small: 10px;
+    --spacing-medium: 15px;
+    --spacing-large: 20px;
+    --spacing-xl: 24px;
+    --spacing-xxl: 30px;
+    --background-white: #ffffff; /* Added for consistency with button colors */
+
+    /* Define layout specific variables for main app */
+    --ai-sidebar-width: 250px; /* Width for the AI assistant sidebar */
+    --ai-form-height: 220px; /* Approximate height of the fixed AI assistant form */
+}
+
+/* --- Generic Body Styling (Applies to ALL pages by default) --- */
+body {
+    font-family: 'Roboto', sans-serif;
+    background-image: url('https://www.commlabindia.com/hubfs/blogs/ai-elearning-learner-engagement-info.jpg');
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    margin: 0;
+    padding: 0;
+    display: flex; /* Use flexbox for centering content */
+    justify-content: center; /* Horizontally center content */
+    align-items: center; /* Vertically center content */
+    min-height: 100vh; /* Ensure body takes at least full viewport height */
+    color: #333;
+    line-height: 1.6;
+    box-sizing: border-box; /* Include padding in height */
+}
+
+
+/* --- Styles specific to the AI Assistant main page (.ai-main-layout) --- */
+/* This ensures layout adjustments apply only when .ai-main-layout is present */
+.ai-main-layout {
+    display: flex;
+    gap: var(--spacing-medium);
+    width: 100%;
+    max-width: 1200px; /* Max width for the entire layout */
+    align-items: flex-start; /* Align items to the top for the main layout */
+    /* Adjust min-height to push fixed form to bottom of viewport */
+    min-height: calc(100vh - (2 * var(--spacing-xxl))); /* Subtract body padding */
+    padding-top: var(--spacing-xxl); /* Add top padding from body as body removed it */
+    padding-bottom: calc(var(--ai-form-height) + var(--spacing-xxl)); /* Space for fixed form + some buffer */
+}
+
+/* Specific body adjustments for when .ai-main-layout is active */
+body .ai-main-layout {
+    /* Override generic body centering for the main app layout */
+    align-items: flex-start;
+    padding-top: var(--spacing-xxl);
+    padding-bottom: calc(var(--ai-form-height) + var(--spacing-xxl));
+}
+
+/*
+ * Main Content Box Styling (the 'box' now takes main content, generic version is below)
+ */
+.box {
+    background: var(--background-white-translucent);
+    padding: var(--spacing-xxl);
+    border-radius: var(--border-radius-large);
+    width: 100%;
+    max-width: 640px; /* Default max-width for non-AI layout pages */
+    box-shadow: 0 8px 24px var(--shadow-light);
+    animation: fadeIn 1s ease-in-out, subtlePulse 3s ease-in-out infinite alternate;
+    margin: auto; /* Ensures centering for non-AI layout pages */
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-medium);
+}
+
+/* Specific .box adjustments for when .ai-main-layout is active */
+.ai-main-layout .box {
+    flex: 1; /* Allows box to grow and shrink horizontally within .ai-main-layout */
+    max-width: none; /* Remove max-width when part of the main layout */
+    margin: 0; /* Remove auto margin when part of the main layout */
+}
+
+
+/* Keyframe animation for the fade-in effect (initial appearance) */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(var(--spacing-large));
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Keyframe animation for a subtle, continuous box-shadow pulse */
+@keyframes subtlePulse {
+    0% {
+        box-shadow: 0 8px 24px var(--shadow-light);
+    }
+    50% {
+        box-shadow: 0 12px 30px var(--shadow-strong); /* Slightly larger, stronger shadow */
+    }
+    100% {
+        box-shadow: 0 8px 24px var(--shadow-light);
+    }
+}
+
+/*
+ * Heading Styles
+ * Specific styling for the main title of the application.
+ */
+.heading {
+    text-align: center;
+    font-size: 24px;
+    margin-bottom: var(--spacing-small);
+    color: var(--primary-color);
+}
+
+/*
+ * Typed Text Display Area
+ * Styles for the dynamic "typed" phrases.
+ */
+.typed-text {
+    font-size: 18px;
+    text-align: center;
+    color: var(--primary-color);
+    margin-bottom: var(--spacing-xl);
+    min-height: 24px;
+}
+
+/*
+ * Form Group Styling (for login/signup inputs)
+ */
+.form-group {
+    margin-bottom: 15px;
+}
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #555;
+}
+.form-group input[type="text"],
+.form-group input[type="password"] {
+    width: calc(100% - 24px); /* Account for padding */
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    box-sizing: border-box; /* Include padding in width */
+    transition: border-color 0.3s ease, box-shadow 0.3s ease; /* Smooth transitions for focus */
+}
+.form-group input[type="text"]:focus,
+.form-group input[type="password"]:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+}
+
+/*
+ * Account Link Styling (for "Already have an account?" / "Don't have an account?")
+ */
+.account-link {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 15px;
+    color: #666;
+}
+.account-link a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: bold;
+}
+.account-link a:hover {
+    text-decoration: underline;
+}
+
+/*
+ * Flash Message Styling
+ */
+.flashes {
+    list-style: none;
+    padding: 10px;
+    margin: 15px 0;
+    border-radius: 5px;
+}
+.flashes li {
+    margin-bottom: 5px;
+    padding: 8px;
+    border-radius: 4px;
+    font-size: 14px;
+}
+.flashes .success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+.flashes .danger {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+.flashes .info {
+    background-color: #d1ecf1;
+    color: #0c5460;
+    border: 1px solid #bee5eb;
+}
+
+
+.auth-links {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 16px;
+}
+.auth-links a {
+  color: var(--primary-color);
+  text-decoration: none;
+  margin: 0 10px;
+  font-weight: bold;
+}
+.auth-links a:hover {
+  text-decoration: underline;
+}
+.auth-links span {
+  margin: 0 10px;
+  color: #555;
+}
+
+/* --- Main Content Layout (Form and Answer Sections) for AI App --- */
+.ai-main-layout .main-content-wrapper {
+    display: flex;
+    flex-direction: column-reverse; /* Puts the input form below the answer section */
+    gap: var(--spacing-xl); /* Space between answer and input */
+    width: 100%;
+    /* Add padding to the bottom to make space for the fixed form */
+    padding-bottom: var(--ai-form-height); /* Space for the fixed form */
+}
+
+/* --- Fixed Input Form Styling --- */
+.ai-main-layout .input-form-section { /* This is the form itself, given class from index.html */
+    position: fixed;
+    bottom: 0;
+    left: var(--ai-sidebar-width); /* Adjusted to start after the sidebar */
+    right: 0;
+    background: var(--background-white);
+    padding: var(--spacing-medium) var(--spacing-xxl);
+    box-shadow: 0 -4px 15px rgba(0,0,0,0.1);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    height: var(--ai-form-height); /* Set a fixed height for the form */
+    justify-content: center;
+    align-items: center;
+}
+
+/* Adjust textarea within fixed form */
+.ai-main-layout .input-form-section textarea {
+    min-height: 80px;
+    max-height: 120px;
+    margin-bottom: var(--spacing-small);
+    width: calc(100% - (2 * var(--spacing-xxl))); /* Adjust width to fit padding */
+}
+
+/* Adjust button within fixed form */
+.ai-main-layout .input-form-section button {
+    margin-top: 0;
+    width: calc(100% - (2 * var(--spacing-xxl))); /* Adjust width to fit padding */
+}
+
+/* Ensure the file upload container respects fixed form layout */
+.ai-main-layout .input-form-section .file-upload-container {
+    bottom: var(--spacing-large);
+    right: var(--spacing-xxl);
+}
+
+.ai-main-layout .answer-section {
+    flex: 1;
+    min-width: 0;
+}
+
+/*
+ * Textarea Input Field (for main AI assistant page) - these styles are now largely overridden by .input-form-section textarea
+ */
+.input-area-wrapper {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-small);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-medium);
+    padding: var(--spacing-medium);
+    background-color: var(--background-white);
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+}
+
+textarea { /* General textarea styles, can be overridden by more specific ones */
+    width: 100%;
+    min-height: 120px;
+    padding: var(--spacing-small);
+    padding-right: 60px;
+    border-radius: var(--border-radius-small);
+    border: 1px solid transparent;
+    font-size: 16px;
+    resize: vertical;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    background-color: transparent;
+}
+
+textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
+}
+
+.file-upload-container {
+    position: absolute;
+    bottom: var(--spacing-small);
+    right: var(--spacing-small);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 5px;
+    z-index: 10;
+}
+
+.add-file-btn {
+    background-color: var(--secondary-color);
+    color: var(--background-white);
+    padding: 8px 12px;
+    border-radius: var(--border-radius-small);
+    cursor: pointer;
+    font-size: 0.9em;
+    border: none;
+    box-shadow: 0 2px 4px var(--shadow-light);
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    width: auto;
+    margin-top: 0;
+}
+
+.add-file-btn:hover {
+    background-color: #218838;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 6px var(--shadow-strong);
+}
+
+.add-file-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 2px var(--shadow-light);
+}
+
+.file-options {
+    display: none;
+    flex-direction: column;
+    background-color: var(--background-white);
+    border: 1px solid #ddd;
+    border-radius: var(--border-radius-small);
+    box-shadow: 0 2px 8px var(--shadow-light);
+    padding: 5px 0;
+    margin-top: 5px;
+    min-width: 180px;
+}
+
+.file-options.show-options {
+    display: flex;
+}
+
+.file-option-btn {
+    padding: 8px 15px;
+    cursor: pointer;
+    color: #333;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: transparent;
+    border: none;
+    text-align: left;
+    width: 100%;
+    box-shadow: none;
+}
+
+.file-option-btn:hover {
+    background-color: var(--background-light);
+}
+
+.file-option-btn.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background-color: var(--background-light);
+}
+
+.uploaded-file-name {
+    font-size: 0.8em;
+    color: #888;
+    margin-top: -5px;
+    text-align: right;
+    position: absolute;
+    bottom: var(--spacing-small);
+    left: var(--spacing-medium);
+    max-width: calc(100% - 100px);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+/*
+ * Main Submit Button (general button style, can be overridden)
+ */
+button {
+    margin-top: var(--spacing-medium);
+    padding: 12px var(--spacing-xl);
+    background-color: var(--primary-color);
+    color: var(--background-white);
+    border: none;
+    border-radius: var(--border-radius-medium);
+    font-size: 16px;
+    cursor: pointer;
+    width: 100%;
+    transition: background 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 4px 8px var(--shadow-light);
+}
+
+button:hover {
+    background-color: var(--primary-hover-color);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px var(--shadow-strong);
+}
+
+button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px var(--shadow-light);
+}
+
+/*
+ * Result Container (general result styling)
+ */
+.result-container {
+    display: flex;
+    flex-direction: row;
+    gap: var(--spacing-large);
+    margin-top: 0; /* No margin-top by default for main app layout */
+    background: var(--background-result);
+    border-left: 5px solid var(--secondary-color);
+    padding: var(--spacing-medium);
+    border-radius: var(--border-radius-medium);
+    flex-wrap: wrap;
+    box-shadow: 0 2px 8px var(--shadow-light);
+    overflow-y: auto;
+    /* Default max-height, will be overridden for main app layout */
+    max-height: 400px;
+}
+
+/* Specific result container adjustments for when .ai-main-layout is active */
+.ai-main-layout .result-container {
+    max-height: calc(100vh - var(--ai-form-height) - (2 * var(--spacing-xxl)) - var(--spacing-xl) - 100px); /* Dynamic height for fixed form */
+    min-height: 200px;
+    margin-bottom: var(--spacing-xl); /* Space between result and fixed form content */
+}
+
+
+.answer-box {
+    flex: 1;
+    min-width: 100%;
+}
+
+.answer-box h3 {
+    margin-top: 0;
+    margin-bottom: var(--spacing-small);
+    color: var(--secondary-color);
+    font-size: 18px;
+}
+
+.answer-box ul {
+    padding-left: var(--spacing-large);
+    margin: 0;
+    list-style: disc;
+}
+
+.answer-box li {
+    margin-bottom: 6px;
+    line-height: 1.5;
+}
+
+pre.code-block {
+    background-color: #2d2d2d;
+    color: #f8f8f2;
+    padding: var(--spacing-medium);
+    border-radius: var(--border-radius-small);
+    overflow-x: auto;
+    font-family: 'Fira Code', 'Roboto Mono', monospace;
+    font-size: 14px;
+    line-height: 1.4;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.pagination-controls {
+    display: flex;
+    justify-content: space-between;
+    margin-top: var(--spacing-small);
+    gap: var(--spacing-small);
+}
+
+.pagination-controls button {
+    padding: 6px var(--spacing-medium);
+    font-size: 14px;
+    border: none;
+    background-color: var(--secondary-color);
+    color: var(--background-white);
+    border-radius: var(--border-radius-small);
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: auto;
+    flex-grow: 1;
+    box-shadow: none;
+}
+
+.pagination-controls button:hover {
+    background-color: #218838;
+    transform: none;
+    box-shadow: none;
+}
+
+/* --- Responsive Adjustments --- */
+@media (max-width: 992px) { /* Adjust for larger tablets and smaller desktops */
+    .ai-main-layout {
+        flex-direction: column; /* Stack sidebar and main content vertically */
+        align-items: center; /* Center them horizontally */
+        gap: var(--spacing-xl);
+        padding-top: var(--spacing-xl);
+        padding-bottom: calc(var(--ai-form-height) + var(--spacing-xl));
+    }
+
+    .ai-main-layout .search-history-sidebar {
+        width: calc(100% - (2 * var(--spacing-medium))); /* Take full width minus padding */
+        max-height: 250px;
+        position: relative; /* Remove sticky when stacked */
+        top: auto;
+    }
+
+    .ai-main-layout .search-history-sidebar.collapsed {
+        max-height: 60px;
+        overflow: hidden;
+    }
+
+    .ai-main-layout .search-history-sidebar.collapsed .toggle-history-btn {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+        background-color: var(--primary-hover-color);
+    }
+
+    .ai-main-layout .search-history-sidebar:not(.collapsed) .toggle-history-btn {
+        position: relative;
+        margin-top: var(--spacing-medium);
+    }
+
+    .ai-main-layout .toggle-history-btn {
+        display: block; /* Show toggle button on smaller screens */
+    }
+
+    .ai-main-layout .box {
+        padding: var(--spacing-xl);
+        width: calc(100% - (2 * var(--spacing-medium))); /* Adjust width for stacked layout */
+    }
+
+    /* Fixed form adjustments for smaller screens */
+    .ai-main-layout .input-form-section {
+        left: 0; /* Takes full width */
+        padding: var(--spacing-medium);
+        height: auto;
+        min-height: 150px;
+    }
+
+    .ai-main-layout .input-form-section textarea {
+        min-height: 60px;
+        max-height: 100px;
+        width: calc(100% - (2 * var(--spacing-medium)));
+    }
+
+    .ai-main-layout .input-form-section button {
+        width: calc(100% - (2 * var(--spacing-medium)));
+    }
+
+    .ai-main-layout .input-form-section .file-upload-container {
+        bottom: var(--spacing-medium);
+        right: var(--spacing-medium);
+    }
+
+    /* Adjust main content padding for fixed form on smaller screens */
+    .ai-main-layout .main-content-wrapper {
+        padding-bottom: calc(var(--ai-form-height) + var(--spacing-xl) + 50px);
+    }
+    .ai-main-layout .result-container {
+         max-height: calc(100vh - var(--ai-form-height) - (2 * var(--spacing-xl)) - 100px);
+    }
+}
+
+@media (max-width: 768px) { /* Tablet and smaller screens */
+    /* .box padding and margin are already handled by 992px media query or default */
+    /* max-width for box is also handled */
+
+    .ai-main-layout .main-content-wrapper {
+        flex-direction: column-reverse; /* Keep input below answer */
+        gap: var(--spacing-xl);
+    }
+
+    /* Result container already has max-height from 992px media query */
+
+    textarea, button {
+        font-size: 14px;
+        padding: 10px var(--spacing-small);
+    }
+
+    .uploaded-file-name {
+        left: var(--spacing-small);
+    }
+}
+
+@media (max-width: 480px) { /* Mobile specific adjustments */
+    .box {
+        padding: var(--spacing-small);
+        margin: var(--spacing-small);
+    }
+
+    .heading {
+        font-size: 20px;
+    }
+
+    .typed-text {
+        font-size: 16px;
+        margin-bottom: var(--spacing-medium);
+    }
+    .ai-main-layout .search-history-sidebar {
+        padding: var(--spacing-small);
+    }
+    .history-item-prompt {
+        font-size: 0.85em;
+    }
+}
+
+
+/* .container - This class does not appear in the current HTML files provided.
+   If it's meant for a different purpose or older structure, it can be kept or removed.
+   Keeping it for now to avoid unexpected changes.
+*/
+.container {
+    background: var(--background-white);
+    padding: 25px;
+    border-radius: 10px;
+    width: 640px;
+    box-shadow: 0 4px 12px var(--shadow-light);
+}
+
+/* Theme switcher styles */
+.theme-switcher {
+    position: fixed;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 8px 0 0 8px;
+    box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+    z-index: 100;
+}
+
+.theme-switcher button {
+    padding: 8px 12px;
+    font-size: 14px;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: var(--background-light);
+    color: #333;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    width: auto;
+    box-shadow: none;
+    margin-top: 0;
+}
+
+.theme-switcher button:hover {
+    background-color: var(--primary-color);
+    color: var(--background-white);
+    transform: none;
+    box-shadow: none;
+}
+
+.theme-switcher button.active {
+    background-color: var(--primary-color);
+    color: var(--background-white);
+    border-color: var(--primary-color);
+}
+
+/* Dark theme specific styles */
+body[data-theme="dark"] {
+    color: #e0e0e0;
+    background-image: url('https://www.commlabindia.com/hubfs/blogs/ai-elearning-learner-engagement-info.jpg');
+}
+
+body[data-theme="dark"] .box {
+    background: rgba(45, 45, 45, 0.85);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+
+body[data-theme="dark"] .heading,
+body[data-theme="dark"] .typed-text {
+    color: var(--primary-color);
+}
+
+body[data-theme="dark"] .auth-links span,
+body[data-theme="dark"] .account-link {
+    color: #bbb;
+}
+
+body[data-theme="dark"] .form-group label {
+    color: #ccc;
+}
+
+body[data-theme="dark"] .form-group input[type="text"],
+body[data-theme="dark"] .form-group input[type="password"] {
+    background-color: #3a3a3a;
+    border-color: #555;
+    color: #e0e0e0;
+}
+
+body[data-theme="dark"] textarea {
+    background-color: #3a3a3a;
+    border-color: #555;
+    color: #e0e0e0;
+}
+
+body[data-theme="dark"] textarea:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.4);
+}
+
+body[data-theme="dark"] .result-container {
+    background: #3a3a3a;
+    border-left-color: var(--secondary-color);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+
+body[data-theme="dark"] .answer-box h3 {
+    color: var(--secondary-color);
+}
+
+body[data-theme="dark"] .answer-box li {
+    color: #e0e0e0;
+}
+
+body[data-theme="dark"] pre.code-block {
+    background-color: #1e1e1e;
+    color: #d4d4d4;
+}
+
+body[data-theme="dark"] .pagination-controls button {
+    background-color: var(--secondary-color);
+    color: var(--background-white);
+}
+
+body[data-theme="dark"] .pagination-controls button:hover {
+    background-color: #218838;
+}
+
+body[data-theme="dark"] .flashes .success {
+    background-color: #28a745;
+    color: #fff;
+    border-color: #218838;
+}
+
+body[data-theme="dark"] .flashes .danger {
+    background-color: #dc3545;
+    color: #fff;
+    border-color: #c82333;
+}
+
+body[data-theme="dark"] .flashes .info {
+    background-color: #17a2b8;
+    color: #fff;
+    border-color: #138496;
+}
+
+body[data-theme="dark"] .theme-switcher {
+    background-color: rgba(45, 45, 45, 0.8);
+    box-shadow: -2px 0 5px rgba(0,0,0,0.4);
+}
+
+body[data-theme="dark"] .theme-switcher button {
+    background-color: #3a3a3a;
+    color: #e0e0e0;
+    border-color: #555;
+}
+
+body[data-theme="dark"] .theme-switcher button:hover {
+    background-color: var(--primary-color);
+    color: var(--background-white);
+}
+
+body[data-theme="dark"] .theme-switcher button.active {
+    background-color: var(--primary-color);
+    color: var(--background-white);
+    border-color: var(--primary-color);
+}
+
+body[data-theme="dark"] .input-area-wrapper {
+    background-color: #3a3a3a;
+    border-color: #555;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
+}
+
+body[data-theme="dark"] .add-file-btn {
+    background-color: var(--secondary-color);
+    color: var(--background-white);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+body[data-theme="dark"] .add-file-btn:hover {
+    background-color: #218838;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.4);
+}
+
+body[data-theme="dark"] .file-options {
+    background-color: #3a3a3a;
+    border-color: #555;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+
+body[data-theme="dark"] .file-option-btn {
+    color: #e0e0e0;
+}
+
+body[data-theme="dark"] .file-option-btn:hover {
+    background-color: #4a4a4a;
+}
+
+body[data-theme="dark"] .uploaded-file-name {
+    color: #aaa;
+}
+
+body[data-theme="dark"]
