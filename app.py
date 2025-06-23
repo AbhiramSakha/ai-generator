@@ -8,16 +8,20 @@ import requests
 import re
 import os
 import base64
-import datetime
+import datetime 
 from dotenv import load_dotenv
 
+
 import firebase_admin
-from firebase_admin import credentials, firestore, auth
+from firebase_admin import credentials, firestore, auth 
+
 
 load_dotenv()
 
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
+
 
 MONGO_URI = os.environ.get('MONGO_URI') or 'mongodb://localhost:27017/'
 DB_NAME = os.environ.get('MONGO_DB_NAME') or 'ai_assistant_db'
@@ -32,9 +36,11 @@ try:
 except Exception as e:
     print(f"MongoDB connection failed: {e}")
 
+
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 login_manager.login_message_category = 'info'
+
 
 class User(UserMixin):
     def __init__(self, id, username, password_hash):
@@ -67,27 +73,32 @@ def load_user(user_id):
     return User.get_by_id(user_id)
 
 
-FIREBASE_CREDENTIALS_PATH = os.environ.get("FIREBASE_CREDENTIALS_PATH")
-if FIREBASE_CREDENTIALS_PATH:
+FIREBASE_CONFIG = os.environ.get('FIREBASE_CONFIG')
+if FIREBASE_CONFIG:
     try:
-        cred = credentials.Certificate(FIREBASE_CREDENTIALS_PATH)
+        
+        firebase_credentials = json.loads(FIREBASE_CONFIG)
+        cred = credentials.Certificate(firebase_credentials)
         firebase_admin.initialize_app(cred)
         db_firestore = firestore.client()
         print("Firestore initialized successfully!")
     except Exception as e:
         print(f"Error initializing Firebase Admin SDK: {e}")
-        db_firestore = None
+        db_firestore = None 
 else:
-    print("FIREBASE_CREDENTIALS_PATH environment variable not found. Firestore will not be available.")
+    print("FIREBASE_CONFIG environment variable not found. Firestore will not be available.")
     db_firestore = None
+
 
 GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
 genai.configure(api_key=GEMINI_API_KEY)
-gemini_model = genai.GenerativeModel("gemini-1.5-flash")
+gemini_model = genai.GenerativeModel("gemini-1.5-flash") 
+
 
 HF_API = "https://api-inference.huggingface.co/models/mrm8488/t5-base-finetuned-emojify"
-HF_API_TOKEN = os.getenv('HF_API_TOKEN')
+HF_API_TOKEN =  os.getenv('HF_API_TOKEN')
 HF_HEADERS = {"Authorization": f"Bearer {HF_API_TOKEN}"} if HF_API_TOKEN else {}
+
 
 def get_gemini_answer(content_parts):
     try:
@@ -98,6 +109,7 @@ def get_gemini_answer(content_parts):
         current_app.logger.error(f"Gemini generation failed: {e}", exc_info=True)
         return None
 
+
 def classify_query_type(prompt):
     coding_keywords = ["code", "python", "javascript", "java", "c++", "html", "css",
                        "react", "sql", "write a program", "function", "syntax"]
@@ -105,17 +117,23 @@ def classify_query_type(prompt):
         return "code"
     return "text"
 
+
 def get_user_history(user_id, limit=10):
     if not db_firestore:
         print("Firestore is not initialized. Cannot retrieve history.")
         return []
     try:
+        
         app_id = os.environ.get('__app_id', 'default_app')
         history_ref = db_firestore.collection(f"artifacts/{app_id}/users/{user_id}/search_history")
+        
+        
+        
         docs = history_ref.order_by('timestamp', direction=firestore.Query.DESCENDING).limit(limit).stream()
         history_items = []
         for doc in docs:
             item = doc.to_dict()
+            
             if 'timestamp' in item and isinstance(item['timestamp'], firestore.Timestamp):
                 item['timestamp'] = item['timestamp']._datetime
             history_items.append(item)
@@ -134,12 +152,13 @@ def add_to_user_history(user_id, prompt, answer):
         history_ref = db_firestore.collection(f"artifacts/{app_id}/users/{user_id}/search_history")
         history_ref.add({
             'prompt': prompt,
-            'answer': answer,
+            'answer': answer, 
             'timestamp': firestore.SERVER_TIMESTAMP
         })
     except Exception as e:
         print(f"Error saving user history to Firestore: {e}")
         current_app.logger.error(f"Firestore history save failed: {e}", exc_info=True)
+
 
 @app.route("/", methods=["GET", "POST"])
 @login_required
@@ -148,15 +167,23 @@ def home():
     rendered_content = None
     is_code_response = False
     search_history = []
-    user_id = current_user.get_id()
+
+    
+    user_id = current_user.get_id() 
+
+    
     search_history = get_user_history(user_id)
 
+    
     ALLOWED_EXTENSIONS = {'txt', 'png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp'}
+
     def allowed_file(filename):
-        return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+        return '.' in filename and \
+               filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
     if request.method == "POST":
         user_text_prompt = request.form.get("text", "").strip()
+        
         content_parts = []
         if user_text_prompt:
             content_parts.append(user_text_prompt)
@@ -168,7 +195,7 @@ def home():
                 file_uploaded = True
                 try:
                     file_extension = file.filename.rsplit('.', 1)[1].lower()
-                    if file_extension == 'txt':
+                    if file_extension in {'txt'}:
                         text_content = file.read().decode('utf-8')
                         content_parts.append(f"\n\n--- Content from uploaded file ---\n{text_content}")
                     elif file_extension in {'png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp'}:
@@ -185,12 +212,19 @@ def home():
             elif file.filename != '':
                 flash("File type not allowed. Only .txt, .png, .jpg, .jpeg, .gif, .bmp, .webp are supported.", "danger")
 
+
         if content_parts:
+            
             query_type = classify_query_type(user_text_prompt)
+
             raw_answer = get_gemini_answer(content_parts)
+
             if raw_answer:
+                
                 add_to_user_history(user_id, user_text_prompt, raw_answer)
+                
                 search_history = get_user_history(user_id)
+
                 if query_type == "code":
                     rendered_content = raw_answer
                     is_code_response = True
@@ -209,7 +243,7 @@ def home():
                            prompt=user_text_prompt,
                            rendered_content=rendered_content,
                            is_code_response=is_code_response,
-                           search_history=search_history)
+                           search_history=search_history) 
 
 @app.route("/signup", methods=["GET", "POST"])
 def signup():
@@ -266,5 +300,5 @@ def logout():
 app.run(host='0.0.0.0', port=5000)
 
 if __name__ == "__main__":
-    import json
+    import json 
     app.run(debug=True)
