@@ -20,7 +20,7 @@ load_dotenv()
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
 
-MONGO_URI = os.environ.get('MONGO_URI') or 'mongodb+srv://<db_username>:<db_password>@cluster0.18rtbk6.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+MONGO_URI = os.environ.get('MONGO_URI') or 'mongodb+srv://<db_username>:<db_password>@cluster0.18rtbk6.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'
 
 
 DB_NAME = os.environ.get('MONGO_DB_NAME') or 'ai_assistant_db'
