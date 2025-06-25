@@ -8,20 +8,17 @@ import requests
 import re
 import os
 import base64
-import datetime 
+import datetime
 from dotenv import load_dotenv
-
+import json
 
 import firebase_admin
-from firebase_admin import credentials, firestore, auth 
-
+from firebase_admin import credentials, firestore, auth
 
 load_dotenv()
 
-
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
-
 
 MONGO_URI = os.environ.get('MONGO_URI') or 'mongodb://localhost:27017/'
 DB_NAME = os.environ.get('MONGO_DB_NAME') or 'ai_assistant_db'
@@ -36,11 +33,9 @@ try:
 except Exception as e:
     print(f"MongoDB connection failed: {e}")
 
-
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 login_manager.login_message_category = 'info'
-
 
 class User(UserMixin):
     def __init__(self, id, username, password_hash):
@@ -72,35 +67,38 @@ class User(UserMixin):
 def load_user(user_id):
     return User.get_by_id(user_id)
 
-
 FIREBASE_CONFIG = os.environ.get('FIREBASE_CONFIG')
+db_firestore = None
+
 if FIREBASE_CONFIG:
     try:
-        
         firebase_credentials = json.loads(FIREBASE_CONFIG)
         cred = credentials.Certificate(firebase_credentials)
         firebase_admin.initialize_app(cred)
         db_firestore = firestore.client()
         print("Firestore initialized successfully!")
     except Exception as e:
-        print(f"Error initializing Firebase Admin SDK: {e}")
-        db_firestore = None 
+        print(f"Error initializing Firebase Admin SDK: {e}. Check FIREBASE_CONFIG format.")
 else:
-    print("FIREBASE_CONFIG environment variable not found. Firestore will not be available.")
-    db_firestore = None
-
+    print("FIREBASE_CONFIG environment variable not found. Firestore will not be available for history.")
 
 GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
-genai.configure(api_key=GEMINI_API_KEY)
-gemini_model = genai.GenerativeModel("gemini-1.5-flash") 
-
+if GEMINI_API_KEY:
+    genai.configure(api_key=GEMINI_API_KEY)
+    gemini_model = genai.GenerativeModel("gemini-1.5-flash")
+    print("Gemini API configured successfully!")
+else:
+    print("GEMINI_API_KEY environment variable not found. Gemini API will not be available.")
+    gemini_model = None
 
 HF_API = "https://api-inference.huggingface.co/models/mrm8488/t5-base-finetuned-emojify"
-HF_API_TOKEN =  os.getenv('HF_API_TOKEN')
+HF_API_TOKEN = os.getenv('HF_API_TOKEN')
 HF_HEADERS = {"Authorization": f"Bearer {HF_API_TOKEN}"} if HF_API_TOKEN else {}
 
-
 def get_gemini_answer(content_parts):
+    if not gemini_model:
+        current_app.logger.error("Gemini model not initialized.")
+        return None
     try:
         response = gemini_model.generate_content(content_parts)
         return getattr(response, "text", "").strip()
@@ -109,31 +107,25 @@ def get_gemini_answer(content_parts):
         current_app.logger.error(f"Gemini generation failed: {e}", exc_info=True)
         return None
 
-
 def classify_query_type(prompt):
     coding_keywords = ["code", "python", "javascript", "java", "c++", "html", "css",
-                       "react", "sql", "write a program", "function", "syntax"]
+                       "react", "sql", "write a program", "function", "syntax",
+                       "algorithm", "script", "json", "xml", "api", "backend", "frontend"]
     if any(keyword in prompt.lower() for keyword in coding_keywords):
         return "code"
     return "text"
-
 
 def get_user_history(user_id, limit=10):
     if not db_firestore:
         print("Firestore is not initialized. Cannot retrieve history.")
         return []
     try:
-        
         app_id = os.environ.get('__app_id', 'default_app')
         history_ref = db_firestore.collection(f"artifacts/{app_id}/users/{user_id}/search_history")
-        
-        
-        
         docs = history_ref.order_by('timestamp', direction=firestore.Query.DESCENDING).limit(limit).stream()
         history_items = []
         for doc in docs:
             item = doc.to_dict()
-            
             if 'timestamp' in item and isinstance(item['timestamp'], firestore.Timestamp):
                 item['timestamp'] = item['timestamp']._datetime
             history_items.append(item)
@@ -152,13 +144,12 @@ def add_to_user_history(user_id, prompt, answer):
         history_ref = db_firestore.collection(f"artifacts/{app_id}/users/{user_id}/search_history")
         history_ref.add({
             'prompt': prompt,
-            'answer': answer, 
+            'answer': answer,
             'timestamp': firestore.SERVER_TIMESTAMP
         })
     except Exception as e:
         print(f"Error saving user history to Firestore: {e}")
         current_app.logger.error(f"Firestore history save failed: {e}", exc_info=True)
-
 
 @app.route("/", methods=["GET", "POST"])
 @login_required
@@ -168,13 +159,10 @@ def home():
     is_code_response = False
     search_history = []
 
-    
-    user_id = current_user.get_id() 
+    user_id = current_user.get_id()
 
-    
     search_history = get_user_history(user_id)
 
-    
     ALLOWED_EXTENSIONS = {'txt', 'png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp'}
 
     def allowed_file(filename):
@@ -212,17 +200,13 @@ def home():
             elif file.filename != '':
                 flash("File type not allowed. Only .txt, .png, .jpg, .jpeg, .gif, .bmp, .webp are supported.", "danger")
 
-
         if content_parts:
-            
             query_type = classify_query_type(user_text_prompt)
 
             raw_answer = get_gemini_answer(content_parts)
 
             if raw_answer:
-                
                 add_to_user_history(user_id, user_text_prompt, raw_answer)
-                
                 search_history = get_user_history(user_id)
 
                 if query_type == "code":
@@ -243,7 +227,7 @@ def home():
                            prompt=user_text_prompt,
                            rendered_content=rendered_content,
                            is_code_response=is_code_response,
-                           search_history=search_history) 
+                           search_history=search_history)
 
 @app.route("/signup", methods=["GET", "POST"])
 def signup():
@@ -297,8 +281,5 @@ def logout():
     flash("You have been logged out.", "info")
     return redirect(url_for("home"))
 
-app.run(host='0.0.0.0', port=5000)
-
 if __name__ == "__main__":
-    import json 
     app.run(debug=True)
