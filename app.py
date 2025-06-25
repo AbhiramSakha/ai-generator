@@ -20,9 +20,22 @@ load_dotenv()
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
 
-MONGO_URI = os.environ.get('MONGO_URI') or 'mongodb+srv://<db_username>:<db_password>@cluster0.18rtbk6.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'
+# --- IMPORTANT: Replace <db_username>, <db_password>, and your cluster details ---
+# It is highly recommended to set these as environment variables (e.g., in a .env file)
+# Example .env entry: MONGO_URI="mongodb+srv://your_actual_username:your_actual_password@yourcluster.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+# Example .env entry: MONGO_DB_NAME="your_database_name"
+MONGO_URI = os.environ.get('MONGO_URI')
+DB_NAME = os.environ.get('MONGO_DB_NAME')
 
-DB_NAME = os.environ.get('MONGO_DB_NAME') or 'ai_assistant_db'
+if not MONGO_URI:
+    print("WARNING: MONGO_URI environment variable not set. Using default placeholder. "
+          "Please set MONGO_URI with your MongoDB Atlas connection string.")
+    MONGO_URI = 'mongodb+srv://<db_username>:<db_password>@cluster0.18rtbk6.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'
+
+if not DB_NAME:
+    print("WARNING: MONGO_DB_NAME environment variable not set. Using default 'ai_assistant_db'.")
+    DB_NAME = 'ai_assistant_db'
+
 
 client = MongoClient(MONGO_URI)
 db = client[DB_NAME]
@@ -33,6 +46,8 @@ try:
     print("MongoDB connected successfully!")
 except Exception as e:
     print(f"MongoDB connection failed: {e}")
+    # You might want to raise an exception or handle this more gracefully in production
+    # For now, it will print the error and continue, but subsequent DB operations will fail.
 
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
@@ -240,6 +255,11 @@ def signup():
         password = request.form.get("password")
         confirm_password = request.form.get("confirm_password")
 
+        # Check if users_collection is properly initialized and connected
+        if users_collection is None:
+            flash("Database not connected. Please try again later.", "danger")
+            return render_template("signup.html", title="Sign Up")
+
         if users_collection.find_one({'username': username}):
             flash("Username already exists.", "danger")
         elif not username or not password or not confirm_password:
@@ -264,6 +284,12 @@ def login():
     if request.method == "POST":
         username = request.form.get("username")
         password = request.form.get("password")
+
+        # Check if users_collection is properly initialized and connected
+        if users_collection is None:
+            flash("Database not connected. Please try again later.", "danger")
+            return render_template("login.html", title="Login")
+
         data = users_collection.find_one({'username': username})
         if data:
             user = User(data['_id'], data['username'], data['password_hash'])
