@@ -20,17 +20,14 @@ load_dotenv()
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
 
-# --- IMPORTANT: Replace <db_username>, <db_password>, and your cluster details ---
-# It is highly recommended to set these as environment variables (e.g., in a .env file)
-# Example .env entry: MONGO_URI="mongodb+srv://your_actual_username:your_actual_password@yourcluster.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
-# Example .env entry: MONGO_DB_NAME="your_database_name"
 MONGO_URI = os.environ.get('MONGO_URI')
 DB_NAME = os.environ.get('MONGO_DB_NAME')
 
 if not MONGO_URI:
     print("WARNING: MONGO_URI environment variable not set. Using default placeholder. "
           "Please set MONGO_URI with your MongoDB Atlas connection string.")
-    MONGO_URI = 'mongodb+srv://<db_username>:<db_password>@cluster0.18rtbk6.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'
+    MONGO_URI = 'mongodb+srv://<db_username>:<db_password>@cluster0.18rtbk6.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+'
 
 if not DB_NAME:
     print("WARNING: MONGO_DB_NAME environment variable not set. Using default 'ai_assistant_db'.")
