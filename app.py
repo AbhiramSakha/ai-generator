@@ -26,7 +26,7 @@ DB_NAME = os.environ.get('MONGO_DB_NAME')
 if not MONGO_URI:
     print("WARNING: MONGO_URI environment variable not set. Using default placeholder. "
           "Please set MONGO_URI with your MongoDB Atlas connection string.")
-    MONGO_URI = 'mongodb+srv://<db_username>:<db_password>@cluster0.18rtbk6.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'
+    MONGO_URI = 'mongodb+srv://<db_ai-generation>:<db_F3G8zKs5BPNX53qI>@cluster0.18rtbk6.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'
 
 if not DB_NAME:
     print("WARNING: MONGO_DB_NAME environment variable not set. Using default 'ai_assistant_db'.")
