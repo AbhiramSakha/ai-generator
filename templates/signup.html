@@ -7,6 +7,75 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <style>
+    /* Styles specific to login/signup forms, could be moved to style.css */
+    .form-group {
+      margin-bottom: 15px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: #555;
+    }
+    .form-group input[type="text"],
+    .form-group input[type="password"] {
+      width: calc(100% - 24px); /* Account for padding and border */
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 16px;
+      box-sizing: border-box; /* Include padding and border in the element's total width and height */
+    }
+    .form-group input[type="text"]:focus,
+    .form-group input[type="password"]:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+    }
+    .account-link {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 15px;
+      color: #666;
+    }
+    .account-link a {
+      color: var(--primary-color);
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .account-link a:hover {
+      text-decoration: underline;
+    }
+    /* Flash message styles */
+    .flashes {
+        list-style: none;
+        padding: 10px;
+        margin: 15px 0;
+        border-radius: 5px;
+    }
+    .flashes li {
+        margin-bottom: 5px;
+        padding: 8px;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+    .flashes .success {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+    .flashes .danger {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
+    .flashes .info {
+        background-color: #d1ecf1;
+        color: #0c5460;
+        border: 1px solid #bee5eb;
+    }
+  </style>
 </head>
 <body>
   <div class="box">
@@ -43,7 +112,6 @@
   </div>
 
   <script>
-
     const typedText = document.getElementById('typedText');
     const phrases = ["Join us to explore the AI Assistant!", "Create your account now!"];
     let phraseIndex = 0;
@@ -72,74 +140,5 @@
     }
     document.addEventListener("DOMContentLoaded", type);
   </script>
-
-  <style>
-    
-    .form-group {
-      margin-bottom: 15px;
-    }
-    .form-group label {
-      display: block;
-      margin-bottom: 5px;
-      font-weight: bold;
-      color: #555;
-    }
-    .form-group input[type="text"],
-    .form-group input[type="password"] {
-      width: calc(100% - 24px); 
-      padding: 12px;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      font-size: 16px;
-      box-sizing: border-box; 
-    }
-    .form-group input[type="text"]:focus,
-    .form-group input[type="password"]:focus {
-      outline: none;
-      border-color: var(--primary-color);
-      box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
-    }
-    .account-link {
-      text-align: center;
-      margin-top: 20px;
-      font-size: 15px;
-      color: #666;
-    }
-    .account-link a {
-      color: var(--primary-color);
-      text-decoration: none;
-      font-weight: bold;
-    }
-    .account-link a:hover {
-      text-decoration: underline;
-    }
-    .flashes {
-        list-style: none;
-        padding: 10px;
-        margin: 15px 0;
-        border-radius: 5px;
-    }
-    .flashes li {
-        margin-bottom: 5px;
-        padding: 8px;
-        border-radius: 4px;
-        font-size: 14px;
-    }
-    .flashes .success {
-        background-color: #d4edda;
-        color: #155724;
-        border: 1px solid #c3e6cb;
-    }
-    .flashes .danger {
-        background-color: #f8d7da;
-        color: #721c24;
-        border: 1px solid #f5c6cb;
-    }
-    .flashes .info {
-        background-color: #d1ecf1;
-        color: #0c5460;
-        border: 1px solid #bee5eb;
-    }
-  </style>
 </body>
 </html>
